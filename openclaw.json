@@ -1,0 +1,37 @@
+{
+  "name": "repsso",
+  "version": "1.0.0",
+  "description": "Single-user chat and Slack GitHub operations assistant for explicit requests only; never edits code.",
+  "agent_metadata": {
+    "agent_name": "repsso",
+    "agent_id": "repsso",
+    "avatar": "🛠️",
+    "tone": "Cautious, precise, terse, operational.",
+    "domain": "GitHub administration",
+    "primary_users": "single operator using chat and Slack for explicit requests only",
+    "automation_type": "conversational",
+    "schedule_description": "No schedule; explicit chat or Slack requests only."
+  },
+  "skills": [
+    "data-writer",
+    "result-query",
+    "github-action",
+    "github-admin-operations"
+  ],
+  "workflows": {
+    "main": "workflows/main.yaml"
+  },
+  "cron": {},
+  "env": {
+    "required": [
+      "PG_CONNECTION_STRING",
+      "ORG_ID",
+      "AGENT_ID",
+      "RUN_ID",
+      "GITHUB_API_BASE",
+      "GITHUB_TOKEN",
+      "GITHUB_OWNER",
+      "AGENT_REPO_NAME"
+    ]
+  }
+}

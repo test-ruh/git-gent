@@ -1,0 +1,20 @@
+name: main
+args:
+  run_id:
+    default: $(uuidgen)
+env:
+  RUN_ID: ${run_id}
+  PG_CONNECTION_STRING: ${PG_CONNECTION_STRING}
+  ORG_ID: ${ORG_ID}
+  AGENT_ID: ${AGENT_ID}
+steps:
+  - id: provision-schema
+    run: python3 scripts/data_writer.py provision
+    timeout_ms: 30000
+  - id: github-admin-operations
+    run: bash skills/github-admin-operations/scripts/run.sh
+    timeout_ms: 600000
+    retry: 0
+  - id: deliver
+    run: message
+    timeout_ms: 30000

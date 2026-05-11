@@ -1,0 +1,51 @@
+infrastructure:
+  - key: PG_CONNECTION_STRING
+    label: PostgreSQL connection string
+    required: true
+    secret: true
+    description: "Connection string for the internal result-store database used to persist repository metadata and GitHub action history."
+    how_to_get: Provisioned by the OpenClaw deployment environment or database administrator.
+  - key: ORG_ID
+    label: Organization ID
+    required: true
+    secret: false
+    description: "Organization identifier used to derive the isolated result-store schema name."
+    how_to_get: Provided by the deployment configuration for this agent.
+  - key: AGENT_ID
+    label: Agent ID
+    required: true
+    secret: false
+    description: "Agent identifier used with ORG_ID to isolate this agent's database schema."
+    how_to_get: Provided by the agent manifest or deployment configuration.
+  - key: RUN_ID
+    label: Run ID
+    required: true
+    secret: false
+    description: "Runtime-provided identifier included with each persisted write for traceability and idempotency."
+    how_to_get: Injected by the OpenClaw runtime for each execution.
+connector:
+  - key: GITHUB_API_BASE
+    label: GitHub API base URL
+    required: true
+    secret: false
+    description: "GitHub REST API base URL for repository administration and pull-request operations."
+    how_to_get: "Use https://api.github.com for GitHub.com or the GHES API root for enterprise installations."
+  - key: GITHUB_TOKEN
+    label: GitHub token
+    required: true
+    secret: true
+    description: "Bearer token with minimal repository administration, PR, issue, and metadata permissions."
+    how_to_get: "Provisioned as a GitHub App installation token or fine-grained personal access token."
+  - key: GITHUB_OWNER
+    label: GitHub owner
+    required: true
+    secret: false
+    description: "GitHub user or organization owner used by the github-action sync workflow."
+    how_to_get: Set to the canonical owner or organization for the agent repository.
+  - key: AGENT_REPO_NAME
+    label: Agent repository name
+    required: true
+    secret: false
+    description: "Repository name used by the github-action sync workflow."
+    how_to_get: Set to the repository name that contains this agent workspace.
+channel: []

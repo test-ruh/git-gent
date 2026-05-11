@@ -1,0 +1,187 @@
+version: "1.0"
+agent_id: repsso
+
+tables:
+  result_repository:
+    description: Stores canonical repository metadata and lookup details.
+    writable: true
+    write_mode: upsert
+    columns:
+      repo_id:
+        type: uuid
+        primary_key: true
+        required: true
+        auto_generate: true
+        description: Internal repository record ID.
+      run_id:
+        type: string
+        required: true
+        description: "Runtime-provided run identifier."
+      repo_full_name:
+        type: string
+        required: true
+        max_length: 255
+        description: Canonical owner/name identifier.
+      repo_url:
+        type: string
+        required: true
+        max_length: 512
+        description: Repository URL.
+      owner_login:
+        type: string
+        required: true
+        max_length: 255
+        description: GitHub owner or organization login.
+      repo_name:
+        type: string
+        required: true
+        max_length: 255
+        description: Short repository name.
+      default_branch:
+        type: string
+        max_length: 255
+        description: Default branch name.
+      visibility:
+        type: string
+        max_length: 32
+        description: "Repository visibility such as public, private, or internal."
+      description:
+        type: text
+        description: Repository description or notes.
+      archived:
+        type: boolean
+        description: Whether the repository is archived.
+      metadata:
+        type: jsonb
+        description: Extra repository facts that do not fit the fixed columns.
+      last_verified_at:
+        type: datetime
+        auto_generate: true
+        description: Last time the repository record was confirmed.
+      created_at:
+        type: datetime
+        required: true
+        auto_generate: true
+        description: Record creation time.
+      updated_at:
+        type: datetime
+        required: true
+        auto_generate: true
+        description: Record update time.
+    conflict_columns:
+      - repo_full_name
+    indexes:
+      - columns: [repo_full_name]
+        name: uq_result_repository_repo_full_name
+      - columns: [owner_login]
+        name: idx_result_repository_owner_login
+      - columns: [updated_at]
+        name: idx_result_repository_updated_at
+  result_github_action:
+    description: "Stores requested GitHub admin operations, drafts, approvals, and outcomes."
+    writable: true
+    write_mode: upsert
+    columns:
+      action_id:
+        type: uuid
+        primary_key: true
+        required: true
+        auto_generate: true
+        description: Internal action record ID.
+      run_id:
+        type: string
+        required: true
+        description: "Runtime-provided run identifier."
+      repo_id:
+        type: uuid
+        description: "Linked repository record, when known."
+      repo_full_name:
+        type: string
+        required: true
+        max_length: 255
+        description: Repository identifier for the requested action.
+      requested_by:
+        type: string
+        required: true
+        max_length: 255
+        description: Requesting user identity.
+      request_channel:
+        type: string
+        required: true
+        max_length: 32
+        description: Source channel such as chat or Slack.
+      action_type:
+        type: string
+        required: true
+        max_length: 64
+        description: "Operation type such as create-repo, open-pr, merge-pr, or comment."
+      target_ref:
+        type: string
+        max_length: 255
+        description: "Branch, PR number, commit SHA, or other target reference."
+      title:
+        type: string
+        max_length: 255
+        description: PR title or other short title text.
+      body:
+        type: text
+        description: "PR description, comment, or operation body."
+      labels:
+        type: jsonb
+        description: Labels to apply or update.
+      assignees:
+        type: jsonb
+        description: Assignees to apply.
+      reviewers:
+        type: jsonb
+        description: Requested reviewers.
+      approval_required:
+        type: boolean
+        required: true
+        description: Whether explicit human approval is required before execution.
+      approval_status:
+        type: string
+        max_length: 32
+        description: "Approval state such as pending, approved, or declined."
+      status:
+        type: string
+        required: true
+        max_length: 32
+        description: "Current action state such as draft, queued, executed, or failed."
+      github_url:
+        type: string
+        max_length: 512
+        description: "Resulting GitHub URL, if one exists."
+      payload:
+        type: jsonb
+        description: Raw request context and execution parameters.
+      summary:
+        type: text
+        description: Short outcome summary.
+      error_text:
+        type: text
+        description: Failure details when an action does not succeed.
+      created_at:
+        type: datetime
+        required: true
+        auto_generate: true
+        description: Record creation time.
+      updated_at:
+        type: datetime
+        required: true
+        auto_generate: true
+        description: Record update time.
+      completed_at:
+        type: datetime
+        description: Time the action finished.
+    conflict_columns:
+      - action_id
+    indexes:
+      - columns: [repo_full_name]
+        name: idx_result_github_action_repo_full_name
+      - columns: [status]
+        name: idx_result_github_action_status
+      - columns: [requested_by]
+        name: idx_result_github_action_requested_by
+      - columns: [created_at]
+        name: idx_result_github_action_created_at
